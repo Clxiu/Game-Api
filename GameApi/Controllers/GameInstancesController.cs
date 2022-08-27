@@ -51,7 +51,7 @@ public class GameInstancesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<GameInstance>> PostGameInstance(GameInstanceDTO gameInstanceDto)
     {
-        if (_context.GameInstance == null || _context.GameStep == null || _context.GameUser == null)
+        if (_context.GameInstance == null || _context.GameStep == null || _context.User == null)
         {
             return Problem("Entity set 'Game2048Context.GameInstance' or 'Game2048Context.GameStep' or ''Game2048Context.User'  is null.");
         }
@@ -71,7 +71,7 @@ public class GameInstancesController : ControllerBase
 
         try
         {
-            _context.GameUser.Where(user => user.UserId == gameInstanceDto.UserId).First();
+            _context.User.Where(user => user.UserId == gameInstanceDto.UserId).First();
         }
         catch
         {

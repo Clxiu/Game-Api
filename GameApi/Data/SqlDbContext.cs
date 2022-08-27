@@ -15,7 +15,7 @@ namespace GameApi.Infrastructure
 
         public DbSet<GameStep>? GameStep { get; set; }
 
-        public DbSet<GameUser>? GameUser { get; set; }
+        public DbSet<User>? User { get; set; }
 
         public DbSet<Leaderboard>? Leaderboard { get; set; }
     }
