@@ -1,6 +1,6 @@
-﻿using GameApi.Domain.Game;
-using GameApi.Domain.Game.DTO;
-using GameApi.Infrastructure.Persistence.Contexts;
+﻿using GameApi.Model;
+using GameApi.Dto;
+using GameApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,24 +19,24 @@ public class UsersController : ControllerBase
 
     // GET: api/Users
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUser()
+    public async Task<ActionResult<IEnumerable<GameUser>>> GetUser()
     {
-        if (_context.User == null)
+        if (_context.GameUser == null)
         {
             return NotFound();
         }
-        return await _context.User.ToListAsync();
+        return await _context.GameUser.ToListAsync();
     }
 
     // GET: api/Users/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<GameUser>> GetUser(int id)
     {
-        if (_context.User == null)
+        if (_context.GameUser == null)
         {
             return NotFound();
         }
-        var user = await _context.User.FindAsync(id);
+        var user = await _context.GameUser.FindAsync(id);
 
         if (user == null)
         {
@@ -49,7 +49,7 @@ public class UsersController : ControllerBase
     // PUT: api/Users/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(int id, User user)
+    public async Task<IActionResult> PutUser(int id, GameUser user)
     {
         if (id != user.UserId)
         {
@@ -80,21 +80,21 @@ public class UsersController : ControllerBase
     // POST: api/Users
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(UserDTO userDTO)
+    public async Task<ActionResult<GameUser>> PostUser(UserDTO userDTO)
     {
-        if (_context.User == null)
+        if (_context.GameUser == null)
         {
             return Problem("Entity set 'Game2048Context.User'  is null.");
         }
 
-        var user = new User
+        var user = new GameUser
         {
             Username = userDTO.Username,
             Email = userDTO.Email,
             Password = userDTO.Password
         };
 
-        _context.User.Add(user);
+        _context.GameUser.Add(user);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction("GetUser", new { id = user.UserId }, userDTO);
@@ -104,17 +104,17 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        if (_context.User == null)
+        if (_context.GameUser == null)
         {
             return NotFound();
         }
-        var user = await _context.User.FindAsync(id);
+        var user = await _context.GameUser.FindAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        _context.User.Remove(user);
+        _context.GameUser.Remove(user);
         await _context.SaveChangesAsync();
 
         return NoContent();
@@ -122,6 +122,6 @@ public class UsersController : ControllerBase
 
     private bool UserExists(int id)
     {
-        return (_context.User?.Any(e => e.UserId == id)).GetValueOrDefault();
+        return (_context.GameUser?.Any(e => e.UserId == id)).GetValueOrDefault();
     }
 }

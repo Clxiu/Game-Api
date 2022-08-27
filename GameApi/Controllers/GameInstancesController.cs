@@ -1,16 +1,11 @@
-﻿using GameApi.AppServices.Moves.Commands;
-using GameApi.AppServices.Moves.Queries;
-using GameApi.Domain.Game;
-using GameApi.Domain.Game.DTO;
-using GameApi.Domain.GameLogic;
-using GameApi.Infrastructure.Persistence.Contexts;
-using MediatR;
+﻿using GameApi.Model;
+using GameApi.Dto;
+using GameApi.GameLogic;
+using GameApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameApi.Controllers;
-
-
 [Route("api/game")]
 [ApiController]
 public class GameInstancesController : ControllerBase
@@ -56,7 +51,7 @@ public class GameInstancesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<GameInstance>> PostGameInstance(GameInstanceDTO gameInstanceDto)
     {
-        if (_context.GameInstance == null || _context.GameStep == null || _context.User == null)
+        if (_context.GameInstance == null || _context.GameStep == null || _context.GameUser == null)
         {
             return Problem("Entity set 'Game2048Context.GameInstance' or 'Game2048Context.GameStep' or ''Game2048Context.User'  is null.");
         }
@@ -76,7 +71,7 @@ public class GameInstancesController : ControllerBase
 
         try
         {
-            _context.User.Where(user => user.UserId == gameInstanceDto.UserId).First();
+            _context.GameUser.Where(user => user.UserId == gameInstanceDto.UserId).First();
         }
         catch
         {
