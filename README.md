@@ -1,7 +1,3 @@
-# Back-end Phase 3
-
-Welcome to Phase 3! For Phase 3, the requirement is to implement some more advanced features that are a bit more involved or difficult to get working.
-
 ## Back End Requirements
 
 To pass phase 3 for the back-end, you will need to have any __five__ of the following advanced features, or any __two__ of the extra for experts features.
@@ -24,7 +20,3 @@ To pass phase 3 for the back-end, you will need to have any __five__ of the foll
 * A YAML CI/CD pipeline which builds and deploys a containerised API to either Azure or AWS, which is configured to set and use environment variables correctly.
 * Implementation and support of GraphQL
 * Usage of Terraform to structure and provision a cloud environment, which is incorporated into a CI/CD pipeline
-
-## Example Repository
-
-The following ack-end code is meant to be a reference, as to how you could implement some of these advanced features. This assignment is going to be tough, and we're sure you're going to have a lot of questions. Please ask them over on the discord server, where we will respond ASAP!
