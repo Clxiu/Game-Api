@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameApi.Migrations
 {
     [DbContext(typeof(SqlDbContext))]
-    [Migration("20220827142315_createTable")]
+    [Migration("20220828121214_createTable")]
     partial class createTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
