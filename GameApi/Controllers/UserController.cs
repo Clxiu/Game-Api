@@ -1,9 +1,10 @@
-﻿using GameApi.Model;
+﻿using FluentValidation.Results;
 using GameApi.Dto;
 using GameApi.Infrastructure;
+using GameApi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FluentValidation.Results;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GameApi.Controllers;
 
@@ -12,9 +13,10 @@ namespace GameApi.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly SqlDbContext _context;
-
-    public UsersController(SqlDbContext context)
+    private readonly IMemoryCache _memoryCache;
+    public UsersController(IMemoryCache memoryCache, SqlDbContext context)
     {
+        _memoryCache = memoryCache;
         _context = context;
     }
 
@@ -22,29 +24,68 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUser()
     {
-        if (_context.User == null)
+        var cacheKey = "userList";
+        //checks if cache entries exists
+        if (!_memoryCache.TryGetValue(cacheKey, out List<User> userList))
         {
-            return NotFound();
+            //calling the server
+            userList = await _context.User.ToListAsync();
+
+            //setting up cache options
+            var cacheExpiryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddSeconds(50),
+                Priority = CacheItemPriority.High,
+                SlidingExpiration = TimeSpan.FromSeconds(20)
+            };
+            //setting cache entries
+            _memoryCache.Set(cacheKey, userList, cacheExpiryOptions);
         }
-        return await _context.User.ToListAsync();
+        return Ok(userList);
+
+        //if (_context.User == null)
+        //{
+        //    return NotFound();
+        //}
+        //return await _context.User.ToListAsync();
     }
 
     // GET: api/Users/5
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        if (_context.User == null)
+        var cacheKey = "user";
+        //checks if cache entries exists
+        if (!_memoryCache.TryGetValue(cacheKey, out User user))
         {
-            return NotFound();
-        }
-        var user = await _context.User.FindAsync(id);
+            //calling the server
+            user = await _context.User.FindAsync(id);
 
+            //setting up cache options
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+
+            //setting cache entries
+            _memoryCache.Set(cacheKey, user, cacheEntryOptions);
+        }
         if (user == null)
         {
             return NotFound();
         }
+        return Ok(user);
 
-        return user;
+        //if (_context.User == null)
+        //{
+        //    return NotFound();
+        //}
+        //var user = await _context.User.FindAsync(id);
+
+        //if (user == null)
+        //{
+        //    return NotFound();
+        //}
+
+        //return user;
     }
 
     // PUT: api/Users/5

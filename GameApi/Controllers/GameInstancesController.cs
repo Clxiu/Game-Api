@@ -1,9 +1,10 @@
-﻿using GameApi.Model;
-using GameApi.Dto;
+﻿using GameApi.Dto;
 using GameApi.GameLogic;
 using GameApi.Infrastructure;
+using GameApi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GameApi.Controllers;
 [Route("api/game")]
@@ -11,9 +12,11 @@ namespace GameApi.Controllers;
 public class GameInstancesController : ControllerBase
 {
     private readonly SqlDbContext _context;
+    private readonly IMemoryCache _memoryCache;
 
-    public GameInstancesController(SqlDbContext context)
+    public GameInstancesController(IMemoryCache memoryCache, SqlDbContext context)
     {
+        _memoryCache = memoryCache;
         _context = context;
     }
 
@@ -21,29 +24,68 @@ public class GameInstancesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GameInstance>>> GetGameInstance()
     {
-        if (_context.GameInstance == null)
+        var cacheKey = "userList";
+        //checks if cache entries exists
+        if (!_memoryCache.TryGetValue(cacheKey, out List<GameInstance> instanceList))
         {
-            return NotFound();
+            //calling the server
+            instanceList = await _context.GameInstance.ToListAsync();
+
+            //setting up cache options
+            var cacheExpiryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddSeconds(50),
+                Priority = CacheItemPriority.High,
+                SlidingExpiration = TimeSpan.FromDays(1)
+            };
+            //setting cache entries
+            _memoryCache.Set(cacheKey, instanceList, cacheExpiryOptions);
         }
-        return await _context.GameInstance.ToListAsync();
+        return Ok(instanceList);
+
+        //if (_context.GameInstance == null)
+        //{
+        //    return NotFound();
+        //}
+        //return await _context.GameInstance.ToListAsync();
     }
 
     // GET: api/game/5
     [HttpGet("{id}")]
     public async Task<ActionResult<GameInstance>> GetGameInstance(int id)
     {
-        if (_context.GameInstance == null)
+        var cacheKey = "gameInstance";
+        //checks if cache entries exists
+        if (!_memoryCache.TryGetValue(cacheKey, out GameInstance instance))
+        {
+            //calling the server
+            instance = await _context.GameInstance.FindAsync(id);
+
+            //setting up cache options
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+
+            //setting cache entries
+            _memoryCache.Set(cacheKey, instance, cacheEntryOptions);
+        }
+        if (instance == null)
         {
             return NotFound();
         }
-        var gameInstance = await _context.GameInstance.FindAsync(id);
+        return Ok(instance);
 
-        if (gameInstance == null)
-        {
-            return NotFound();
-        }
+        //if (_context.GameInstance == null)
+        //{
+        //    return NotFound();
+        //}
+        //var gameInstance = await _context.GameInstance.FindAsync(id);
 
-        return gameInstance;
+        //if (gameInstance == null)
+        //{
+        //    return NotFound();
+        //}
+
+        //return gameInstance;
     }
 
     // POST: api/game
@@ -53,7 +95,7 @@ public class GameInstancesController : ControllerBase
     {
         if (_context.GameInstance == null || _context.GameStep == null || _context.User == null)
         {
-            return Problem("Entity set 'Game2048Context.GameInstance' or 'Game2048Context.GameStep' or ''Game2048Context.User'  is null.");
+            return Problem("Entity set 'Game2048Context.GameInstance' or 'Game2048Context.GameStep' or ''Game2048Context.User' is null.");
         }
 
         GameBoard gameBoard;

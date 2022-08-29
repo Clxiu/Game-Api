@@ -17,7 +17,8 @@ builder.Services.AddControllers()
         options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     });
 #pragma warning restore CS0618 // Type or member is obsolete
-                              // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
