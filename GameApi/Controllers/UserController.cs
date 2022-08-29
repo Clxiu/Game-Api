@@ -3,6 +3,7 @@ using GameApi.Dto;
 using GameApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation.Results;
 
 namespace GameApi.Controllers;
 
@@ -84,7 +85,7 @@ public class UsersController : ControllerBase
     {
         if (_context.User == null)
         {
-            return Problem("Entity set 'Game2048Context.User'  is null.");
+            return Problem("Entity set 'Game2048Context.User' is null.");
         }
 
         var user = new User
@@ -93,6 +94,18 @@ public class UsersController : ControllerBase
             Email = userDTO.Email,
             Password = userDTO.Password
         };
+
+        UserValidator validator = new UserValidator();
+        ValidationResult results = validator.Validate(user);
+
+        if (!results.IsValid)
+        {
+            foreach (var failure in results.Errors)
+            {
+                Console.WriteLine("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+            }
+            return BadRequest();
+        }
 
         _context.User.Add(user);
         await _context.SaveChangesAsync();
