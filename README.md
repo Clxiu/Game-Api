@@ -6,13 +6,13 @@ To pass phase 3 for the back-end, you will need to have any __five__ of the foll
 
 * Onion structure - clear separation of DB access layer and API layer (done)
 * Usage of EF Core (done)
-* Usage of caching to speed up calls
-* End to end testing using Postman or JMeter
+* Usage of caching to speed up calls (done?)
+* End to end testing using Postman or JMeter (done, Postman)
 * Comprehensive unit testing
 * OAuth2 with PKCE login w/ at least ONE third party provider
 * Implementation of websockets using SignalR
 * Deployment using a CI/CD pipeline to the cloud
-* Usage of Fluent Validation / Fluent Assertions (done)
+* Usage of Fluent Validation / Fluent Assertions (done, Fluent Validation)
 * Demonstration of complex BE logic
 
 ## Expert Features
