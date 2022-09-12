@@ -8,7 +8,7 @@ To pass phase 3 for the back-end, you will need to have any __five__ of the foll
 
 * Onion structure - clear separation of DB access layer and API layer (done)
 * Usage of EF Core (done)
-* Usage of caching to speed up calls (done?)
+* Usage of caching to speed up calls (done, In-memory cache)
 * End to end testing using Postman or JMeter (done, Postman)
 * Comprehensive unit testing
 * OAuth2 with PKCE login w/ at least ONE third party provider
